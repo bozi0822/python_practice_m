@@ -13,7 +13,6 @@ def timestamp_to_string(stamp):
 
 def history_data_generation(device_code, param_code, upper, lower, num):
     today_datetime = datetime.datetime.now()
-    # today = today_datetime.strftime("%Y%m%d")
 
     for i in range(num):
         no = str(i).zfill(4)
@@ -51,8 +50,8 @@ if __name__ == '__main__':
     # 22070100060003200050 电流
     # 22070100060003200051 频率
     # 22070100060003200052 功率
-    device_code = 'A1202050001180953'
-    param_code = '22070100060003200049'  # 电压
-    upper = 250
-    lower = 200
-    history_data_generation(device_code=device_code, param_code=param_code, upper=upper, lower=lower, num=300)
+    device_code_ = 'A1202050001180953'
+    param_code_ = '22070100060003200049'  # 电压
+    upper_ = 250
+    lower_ = 200
+    history_data_generation(device_code=device_code_, param_code=param_code_, upper=upper_, lower=lower_, num=300)
