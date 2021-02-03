@@ -3,6 +3,7 @@ import datetime
 from datetime import date
 
 
+# https://github.com/bozi0822/python_practice_m.git
 def get_diff(list1, list2):
     diff = [x for x in list1 if x not in list2]  # 在list1列表中而不在list2列表中
     if len(diff) == 0:
