@@ -12,6 +12,7 @@ def get_diff(list1, list2):
         diff = [x for x in list2 if x not in list1]  # 在list2列表中而不在list1列表中
     return diff
 
+
 class Excel_reader:
 
     def __init__(self, _file_name, _sheet_idx):
