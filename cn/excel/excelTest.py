@@ -12,7 +12,7 @@ def get_diff(list1, list2):
         diff = [x for x in list2 if x not in list1]  # 在list2列表中而不在list1列表中
     return diff
 
-
+# excel读取类
 class Excel_reader:
 
     def __init__(self, _file_name, _sheet_idx):
@@ -22,6 +22,10 @@ class Excel_reader:
         self.row_sum, self.col_sum = self.get_row_num_and_col_num()
 
     def get_sheet(self):
+        """
+                获取表
+                :return:
+        """
         # 打开文件
         wb = xlrd.open_workbook(filename=self.file_name)
         # 获取所有sheet的名字
@@ -32,7 +36,12 @@ class Excel_reader:
         sheet = wb.sheet_by_index(self.sheet_idx)
         return sheet
 
+    # 获取表的总列数和总行数
     def get_row_num_and_col_num(self):
+        """
+                获取表的总列数和总行数
+                :return:
+        """
         # 行数
         row_num = self.sheet.nrows
         # 列数
@@ -42,6 +51,11 @@ class Excel_reader:
         return row_num, col_num
 
     def read_content(self, col_num):
+        """
+                读取表的内容
+                :param col_num:
+                :return:
+                """
         _a_list = []
         _head_list = []
         for i in range(self.row_sum):
@@ -60,6 +74,9 @@ class Excel_reader:
         return _a_list, _head_list
 
     def print_content(self):
+        """
+                打印表内容
+        """
         for i in range(self.col_sum):
             print('=' * 150)
             _res_list, _head_list = self.read_content(col_num=i)
@@ -67,6 +84,9 @@ class Excel_reader:
             print(_res_list)
 
     def create_table_sql(self):
+        """
+        获取表创建新表的脚本
+        """
         res_list_0, head_list_0 = self.read_content(0)
         res_list_1, _ = self.read_content(2)
         table_name = self.file_name.split("\\")[-1].split(".")[0]  # 截取文件名
