@@ -6,14 +6,16 @@ import re
 
 
 # https://github.com/bozi0822/python_practice_m.git
+# 比较两个list的差异
 def get_diff(list1, list2):
     diff = [x for x in list1 if x not in list2]  # 在list1列表中而不在list2列表中
     if len(diff) == 0:
         diff = [x for x in list2 if x not in list1]  # 在list2列表中而不在list1列表中
     return diff
 
-# excel读取类
+
 class Excel_reader:
+    """excel读取类"""
 
     def __init__(self, _file_name, _sheet_idx):
         self.file_name = _file_name
@@ -23,24 +25,23 @@ class Excel_reader:
 
     def get_sheet(self):
         """
-                获取表
-                :return:
+        获取表
+        :return:
         """
         # 打开文件
         wb = xlrd.open_workbook(filename=self.file_name)
         # 获取所有sheet的名字
         name = self.file_name
-        str_list = name.split('\\')
+        str_list = name.split('\\')  # 截取生成表名
         print('文件名：' + str_list[len(str_list) - 1] + ':\n表名：', wb.sheet_names())
         # sheet1索引从0开始，得到sheet1表的句柄
         sheet = wb.sheet_by_index(self.sheet_idx)
         return sheet
 
-    # 获取表的总列数和总行数
     def get_row_num_and_col_num(self):
         """
-                获取表的总列数和总行数
-                :return:
+        获取表的总列数和总行数
+        :return:
         """
         # 行数
         row_num = self.sheet.nrows
@@ -52,10 +53,10 @@ class Excel_reader:
 
     def read_content(self, col_num):
         """
-                读取表的内容
-                :param col_num:
-                :return:
-                """
+        读取表的内容
+        :param col_num:
+        :return:
+        """
         _a_list = []
         _head_list = []
         for i in range(self.row_sum):
@@ -75,7 +76,7 @@ class Excel_reader:
 
     def print_content(self):
         """
-                打印表内容
+        打印表内容
         """
         for i in range(self.col_sum):
             print('=' * 150)
@@ -87,11 +88,9 @@ class Excel_reader:
         """
         获取表创建新表的脚本
         """
-        res_list_0, head_list_0 = self.read_content(0)
-        res_list_1, _ = self.read_content(2)
-        table_name = self.file_name.split("\\")[-1].split(".")[0]  # 截取文件名
-        table_name = re.sub('[\u4e00-\u9fa5]', '', table_name)  # 去掉汉字
-        table_name = str.upper(table_name)  # 大写
+        res_list_0, head_list_0 = self.read_content(0)  # 获取到第1列数据
+        res_list_1, _ = self.read_content(2)  # 获取到第3列数据
+        table_name = self.get_table_name()
         sql = f"create table {table_name}(\n"
         for i in range(len(res_list_0)):
             sql += "   " + res_list_0[i] + " " + res_list_1[i]
@@ -101,51 +100,18 @@ class Excel_reader:
             sql += ",\n"
         print(sql + ");")
 
+    def get_table_name(self):
+        """
+        获取表名
+        """
+        table_name = self.file_name.split("\\")[-1].split(".")[0]  # 截取文件名
+        table_name = re.sub('[\u4e00-\u9fa5]', '', table_name)  # 去掉汉字
+        table_name = str.upper(table_name)  # 大写
+        return table_name
+
 
 if __name__ == '__main__':
-    file_name1 = r'D:\MyData\ex_pengzb\Desktop\pm_plan_det字段.xls'
-    file_name2 = r'D:\MyData\ex_pengzb\Desktop\pm_plan_det_his_new字段.xls'
     sheet_idx = 0
-    # er1 = Excel_reader(file_name1, sheet_idx)
-    # res_list1 = er1.read_content(0)
-    # print('========================================================================================================')
-    # er2 = Excel_reader(file_name2, sheet_idx)
-    # res_list2 = er2.read_content(0)
-    # print('========================================================================================================')
-    # print('res_list1=>', res_list1)
-    # print('res_list2=>', res_list2)
-    #
-    # c = get_diff(res_list1, res_list2)
-    # print('diff => ', c)
-
-    # file_name3 = r'D:\MyData\ex_pengzb\Downloads\EAM设备名称修改申请明细.xls'
-    # er3 = Excel_reader(file_name3, sheet_idx)
-    # res_list1, head_list1 = er3.read_content(1)
-    # res_list2, head_list2 = er3.read_content(2)
-    # res_list3, head_list3 = er3.read_content(3)
-
-    # print(res_list1)
-    # print(head_list1[1], len(res_list1))
-    # print(res_list2)
-    # print(head_list1[2], len(res_list2))
-    # print(res_list3)
-    # print(head_list1[3], len(res_list3))
-
-    # for i in range(er3.col_sum):
-    #     print('=' * 150)
-    #     res_list, head_list = er3.read_content(col_num=i)
-    #     print(head_list[i], len(res_list))
-    #     print(res_list)
-
-    # file_name4 = r'D:\MyData\ex_pengzb\Desktop\DEVICE_PARAMETER_REALTIME字段.xls'
-    # er = Excel_reader(file_name4, sheet_idx)
-    # res_list_0, head_list_0 = er.read_content(0)
-    # res_list_1, _ = er.read_content(2)
-    # er.print_content()
-    # sql = "create table DEVICE_PARAMETER_REALTIME(\n"
-    # for i in range(len(res_list_0)):
-    #     sql += "   " + res_list_0[i] + " " + res_list_1[i] + ",\n"
-    # print(sql + ");")
 
     file_name5 = r'D:\MyData\ex_pengzb\Desktop\cr_punch_area字段.xls'
     er1 = Excel_reader(_file_name=file_name5, _sheet_idx=sheet_idx)
