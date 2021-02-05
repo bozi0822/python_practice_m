@@ -1,3 +1,4 @@
+import sys
 import time
 
 import os
@@ -41,7 +42,7 @@ class Excel_reader:
             print('文件名：' + str_list[len(str_list) - 1] + ':\n表名：', _sheet_name)
         # sheet1索引从0开始，得到sheet1表
         sheet = sheet_names[0]
-        time.sleep(1)
+        # time.sleep(1)
         return sheet
 
     # 获取表格的总行数和总列数
@@ -128,7 +129,7 @@ def init():
     input_fold_name = input("请输入需要汇总文件夹的路径：")
     input_fold_name += '\\'
     print("开始提取...")
-    time.sleep(2)
+    time.sleep(1)
 
 
 # 判断变量类型的函数
@@ -161,11 +162,12 @@ if __name__ == '__main__':
     a_list = get_file_from_fold(_path=input_fold_name)  # 获取文件夹内的所有含有.xls结尾的文件
     if len(a_list) == 0:
         print("err: 并没有找到文件夹含有.xls结尾的文件。\n请添加后重新运行此程序!")
+        time.sleep(10000)
         os.abort()
     # ic(a_list)
-    time.sleep(1)
+    time.sleep(0.5)
     print("======导入excel完成！需要合并的文件有", len(a_list), "个")
-    time.sleep(2)
+    time.sleep(1)
     row_counter = 0
     print("======新建output文件！")
     ew = Excel_writer(f'{input_fold_name}\output.xlsx')  # 新建output文件
@@ -174,7 +176,7 @@ if __name__ == '__main__':
         row_sum, col_sum = er.get_row_col_sum()
         real_row_sum = er.find_last_row()  # 查找最后一行 （最后一行有可能是None）
         # ic(real_row_sum)
-        print('查找最后一行为：', real_row_sum)
+        print('查找最后一行：', real_row_sum)
         # 设置获取最后n行
         set_last_row_num = 3
         # 写入表名
@@ -202,3 +204,5 @@ if __name__ == '__main__':
                     last_row_n[j] = format(last_row_n[j], '.2%')
                     # ic(last_row_n[j])
                 ew.set_cell_value(row_counter, j + 1, last_row_n[j])
+    print(f'提取完成...\n输出的文件保存至{input_fold_name}')
+    time.sleep(10000)
