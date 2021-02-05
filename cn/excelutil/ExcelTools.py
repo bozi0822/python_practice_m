@@ -1,8 +1,5 @@
 import time
 
-import xlrd
-import re
-import xlwt
 import os
 from icecream import ic
 from openpyxl import *
@@ -23,7 +20,7 @@ class Excel_reader:
     _a_list = []
     _head_list = []
 
-    def __init__(self, _file_name, _sheet_idx):
+    def __init__(self, _file_name):
         self.file = _file_name
         self.wb = load_workbook(self.file, data_only=True)
         sheets = self.wb.sheetnames
@@ -40,8 +37,8 @@ class Excel_reader:
         sheet_names = self.wb.sheetnames
         name = self.file
         str_list = name.split('\\')  # 截取生成表名
-        for sheet_name in sheet_names:
-            print('文件名：' + str_list[len(str_list) - 1] + ':\n表名：', sheet_name)
+        for _sheet_name in sheet_names:
+            print('文件名：' + str_list[len(str_list) - 1] + ':\n表名：', _sheet_name)
         # sheet1索引从0开始，得到sheet1表
         sheet = sheet_names[0]
         time.sleep(1)
@@ -88,6 +85,9 @@ class Excel_reader:
 
 
 class Excel_writer:
+    """
+    写入excel类
+    """
 
     def __init__(self, _file_name):
         self.file = _file_name
@@ -96,13 +96,15 @@ class Excel_writer:
         self.sheet = sheets[0]
         self.ws = self.wb[self.sheet]
 
-    # 设置某个单元格的值
     def set_cell_value(self, row, column, cell_value):
+        """
+        设置某个单元格的值
+        """
         try:
             self.ws.cell(row=row, column=column).value = cell_value
             self.wb.save(self.file)
         except:
-            self.ws.cell(row=row, column=column).value = "writefail"
+            self.ws.cell(row=row, column=column).value = "write failed"
             self.wb.save(self.file)
 
 
@@ -119,6 +121,7 @@ def banner_paint():
 input_fold_name = ''
 
 
+# 初始化程序
 def init():
     banner_paint()
     global input_fold_name
@@ -128,49 +131,74 @@ def init():
     time.sleep(2)
 
 
+# 判断变量类型的函数
+def typeof(variate):
+    _type = None
+    if isinstance(variate, int):
+        _type = "int"
+    elif isinstance(variate, str):
+        _type = "str"
+    elif isinstance(variate, float):
+        _type = "float"
+    elif isinstance(variate, list):
+        _type = "list"
+    elif isinstance(variate, tuple):
+        _type = "tuple"
+    elif isinstance(variate, dict):
+        _type = "dict"
+    elif isinstance(variate, set):
+        _type = "set"
+    return _type
+
+
 if __name__ == '__main__':
-    # init()
-    sheet_idx = 0
-    # D:\PycharmProjects\demoProj\cn\excel\
-    input_fold_name = 'D:\\MyData\\ex_pengzb\\Desktop\\testExcel\\'
-    # input_fold_name = 'D:\\PycharmProjects\\demoProj\\cn\\excel\\'
+    # ..\excel\
+    # ..\testExcel\
+    # input_fold_name = '..\\testExcel\\'
+    # input_fold_name = '..\\excel\\'
+    init()
     print("获取输入的文件夹的excel文件...")
-    a_list = get_file_from_fold(_path=input_fold_name)
+    a_list = get_file_from_fold(_path=input_fold_name)  # 获取文件夹内的所有含有.xls结尾的文件
     if len(a_list) == 0:
-        print("err: 文件夹并没有.xls结尾的文件")
+        print("err: 并没有找到文件夹含有.xls结尾的文件。\n请添加后重新运行此程序!")
         os.abort()
-    ic(a_list)
+    # ic(a_list)
     time.sleep(1)
-    print("导入excel完成！需要合并的文件有", len(a_list), "个")
+    print("======导入excel完成！需要合并的文件有", len(a_list), "个")
     time.sleep(2)
     row_counter = 0
+    print("======新建output文件！")
     ew = Excel_writer(f'{input_fold_name}\output.xlsx')  # 新建output文件
     for i in range(len(a_list)):
-        er = Excel_reader(_file_name=a_list[i], _sheet_idx=sheet_idx)
+        er = Excel_reader(_file_name=a_list[i])
         row_sum, col_sum = er.get_row_col_sum()
-        res_data_3 = er.get_row_value(3)
-        real_row_sum = er.find_last_row()
-        ic(real_row_sum)
-        last_row_2 = er.get_row_value(real_row_sum - 2)
-        last_row_1 = er.get_row_value(real_row_sum - 1)
-        last_row = er.get_row_value(real_row_sum)
+        real_row_sum = er.find_last_row()  # 查找最后一行 （最后一行有可能是None）
+        # ic(real_row_sum)
+        print('查找最后一行为：', real_row_sum)
+        # 设置获取最后n行
+        set_last_row_num = 3
+        # 写入表名
         sheet_name = str(er.get_sheet())
         row_counter += 1
         ew.set_cell_value(row_counter, 1, sheet_name)
+        # 写入表头
         row_counter += 1
+        res_data_3 = er.get_row_value(3)
         for j in range(len(res_data_3)):
-            ic(res_data_3[j])
+            print(j, ":", res_data_3[j])
             ew.set_cell_value(row_counter, j + 1, res_data_3[j])
-        row_counter += 1
-        for j in range(len(last_row_2)):
-            ic(last_row_2[j])
-            ew.set_cell_value(row_counter, j + 1, last_row_2[j])
-        row_counter += 1
-        for j in range(len(last_row_1)):
-            ic(last_row_1[j])
-            ew.set_cell_value(row_counter, j + 1, last_row_1[j])
-        row_counter += 1
-        for j in range(len(last_row)):
-            ic(last_row[j])
-            ew.set_cell_value(row_counter, j + 1, last_row[j])
-
+            # 写入内容
+        for jj in range(set_last_row_num):
+            last_row_n = er.get_row_value(real_row_sum - jj)
+            row_counter += 1
+            for j in range(len(last_row_n)):
+                print(j, ":", last_row_n[j])
+                # ic(type(last_row_n[j]))
+                if last_row_n[j] is None:
+                    continue
+                # 小数转化百分比显示
+                if typeof(last_row_n[j]) == typeof(1) or typeof(last_row_n[j]) == typeof(0.1) and (
+                        1 >= last_row_n[j] > 0):
+                    last_row_n[j] = format(last_row_n[j], '.2%')
+                    # ic(last_row_n[j])
+                ew.set_cell_value(row_counter, j + 1, last_row_n[j])
