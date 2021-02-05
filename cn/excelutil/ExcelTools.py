@@ -204,5 +204,5 @@ if __name__ == '__main__':
                     last_row_n[j] = format(last_row_n[j], '.2%')
                     # ic(last_row_n[j])
                 ew.set_cell_value(row_counter, j + 1, last_row_n[j])
-    print(f'提取完成...\n输出的文件保存至{input_fold_name}')
+    print(f'提取完成...\n输出的文件保存至{input_fold_name},文件名为output.xlsx')
     time.sleep(10000)
