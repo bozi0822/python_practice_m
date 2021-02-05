@@ -1,3 +1,5 @@
+import time
+
 import xlrd
 import re
 import xlwt
@@ -10,7 +12,7 @@ def get_file_from_fold(_path):
     files = os.listdir(_path)
     files_list = []
     for filename in files:
-        if not (filename.__contains__('.xls') or filename.__contains__('.xlsx')):
+        if not (filename.__contains__('.xls') or filename.__contains__('.xlsx')) or (filename.__contains__('output')):
             continue
         files_list.append(_path + filename)
     return files_list
@@ -42,6 +44,7 @@ class Excel_reader:
             print('文件名：' + str_list[len(str_list) - 1] + ':\n表名：', sheet_name)
         # sheet1索引从0开始，得到sheet1表
         sheet = sheet_names[0]
+        time.sleep(1)
         return sheet
 
     # 获取表格的总行数和总列数
@@ -73,6 +76,7 @@ class Excel_reader:
             row_data.append(cell_value)
         return row_data
 
+    # 寻找最后一行
     def find_last_row(self):
         _row_sum, _ = self.get_row_col_sum()
         row_val = [None] * _row_sum
@@ -102,35 +106,71 @@ class Excel_writer:
             self.wb.save(self.file)
 
 
+def banner_paint():
+    print("""
+     ______     __  __     ______     ______     __            ______   ______     ______     __        
+    /\  ___\   /\_\_\_\   /\  ___\   /\  ___\   /\ \          /\__  _\ /\  __ \   /\  __ \   /\ \       
+    \ \  __\   \/_/\_\/_  \ \ \____  \ \  __\   \ \ \____     \/_/\ \/ \ \ \/\ \  \ \ \/\ \  \ \ \____  
+     \ \_____\   /\_\/\_\  \ \_____\  \ \_____\  \ \_____\       \ \_\  \ \_____\  \ \_____\  \ \_____\ 
+      \/_____/   \/_/\/_/   \/_____/   \/_____/   \/_____/        \/_/   \/_____/   \/_____/   \/_____/                                                                                              
+    """)
+
+
+input_fold_name = ''
+
+
+def init():
+    banner_paint()
+    global input_fold_name
+    input_fold_name = input("请输入需要汇总文件夹的路径：")
+    input_fold_name += '\\'
+    print("开始提取...")
+    time.sleep(2)
+
 
 if __name__ == '__main__':
+    # init()
     sheet_idx = 0
-    # path = 'D:\\MyData\\ex_pengzb\\Desktop\\testExcel\\'
-    path = 'D:\\PycharmProjects\\demoProj\\cn\\excel\\'
-    a_list = get_file_from_fold(_path=path)
+    # D:\PycharmProjects\demoProj\cn\excel\
+    input_fold_name = 'D:\\MyData\\ex_pengzb\\Desktop\\testExcel\\'
+    # input_fold_name = 'D:\\PycharmProjects\\demoProj\\cn\\excel\\'
+    print("获取输入的文件夹的excel文件...")
+    a_list = get_file_from_fold(_path=input_fold_name)
     if len(a_list) == 0:
         print("err: 文件夹并没有.xls结尾的文件")
         os.abort()
-    er = Excel_reader(_file_name=a_list[0], _sheet_idx=sheet_idx)
-    row_sum, col_sum = er.get_row_col_sum()
-    res_data_3 = er.get_row_value(3)
-    real_row_sum = er.find_last_row()
-    ic(real_row_sum)
-    res_data_78 = er.get_row_value(row_sum - 5)
-    res_data_79 = er.get_row_value(row_sum - 4)
-    res_data_80 = er.get_row_value(row_sum - 3)
-    ew = Excel_writer(r'D:\PycharmProjects\demoProj\cn\excel\output.xlsx')
-    sheet_name = str(er.get_sheet())
-    ew.set_cell_value(1, 1, sheet_name)
-    for i in range(len(res_data_3)):
-        ic(res_data_3[i])
-        ew.set_cell_value(2, i + 1, res_data_3[i])
-    for i in range(len(res_data_78)):
-        ic(res_data_78[i])
-        ew.set_cell_value(3, i + 1, res_data_78[i])
-    for i in range(len(res_data_79)):
-        ic(res_data_79[i])
-        ew.set_cell_value(4, i + 1, res_data_79[i])
-    for i in range(len(res_data_80)):
-        ic(res_data_80[i])
-        ew.set_cell_value(5, i + 1, res_data_80[i])
+    ic(a_list)
+    time.sleep(1)
+    print("导入excel完成！需要合并的文件有", len(a_list), "个")
+    time.sleep(2)
+    row_counter = 0
+    ew = Excel_writer(f'{input_fold_name}\output.xlsx')  # 新建output文件
+    for i in range(len(a_list)):
+        er = Excel_reader(_file_name=a_list[i], _sheet_idx=sheet_idx)
+        row_sum, col_sum = er.get_row_col_sum()
+        res_data_3 = er.get_row_value(3)
+        real_row_sum = er.find_last_row()
+        ic(real_row_sum)
+        last_row_2 = er.get_row_value(real_row_sum - 2)
+        last_row_1 = er.get_row_value(real_row_sum - 1)
+        last_row = er.get_row_value(real_row_sum)
+        sheet_name = str(er.get_sheet())
+        row_counter += 1
+        ew.set_cell_value(row_counter, 1, sheet_name)
+        row_counter += 1
+        for j in range(len(res_data_3)):
+            ic(res_data_3[j])
+            ew.set_cell_value(row_counter, j + 1, res_data_3[j])
+        row_counter += 1
+        for j in range(len(last_row_2)):
+            ic(last_row_2[j])
+            ew.set_cell_value(row_counter, j + 1, last_row_2[j])
+        row_counter += 1
+        for j in range(len(last_row_1)):
+            ic(last_row_1[j])
+            ew.set_cell_value(row_counter, j + 1, last_row_1[j])
+        row_counter += 1
+        for j in range(len(last_row)):
+            ic(last_row[j])
+            ew.set_cell_value(row_counter, j + 1, last_row[j])
+
