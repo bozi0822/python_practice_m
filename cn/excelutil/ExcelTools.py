@@ -2,18 +2,21 @@ import sys
 import time
 
 import os
-from icecream import ic
+from tqdm import tqdm
 from openpyxl import *
 
 
 def get_file_from_fold(_path):
-    files = os.listdir(_path)
+    try:
+        files = os.listdir(_path)
+    except:
+        return [], -1
     files_list = []
     for filename in files:
         if not (filename.__contains__('.xls') or filename.__contains__('.xlsx')) or (filename.__contains__('output')):
             continue
         files_list.append(_path + filename)
-    return files_list
+    return files_list, 0
 
 
 class Excel_reader:
@@ -39,7 +42,8 @@ class Excel_reader:
         name = self.file
         str_list = name.split('\\')  # 截取生成表名
         for _sheet_name in sheet_names:
-            print('文件名：' + str_list[len(str_list) - 1] + ':\n表名：', _sheet_name)
+            pass
+            # print('文件名：' + str_list[len(str_list) - 1] + ':\n表名：', _sheet_name)
         # sheet1索引从0开始，得到sheet1表
         sheet = sheet_names[0]
         # time.sleep(1)
@@ -126,8 +130,9 @@ input_fold_name = ''
 def init():
     banner_paint()
     global input_fold_name
-    input_fold_name = input("请输入需要汇总文件夹的路径：")
-    input_fold_name += '\\'
+    input_fold_name = input("请输入需要汇总文件夹的路径（输入完成按enter键继续）：")
+    input_fold_name = input_fold_name.strip()  # 去除最右的空格
+    input_fold_name += '\\'  # macos '/'  win7 '\\'
     print("开始提取...")
     time.sleep(1)
 
@@ -158,25 +163,29 @@ if __name__ == '__main__':
     # input_fold_name = '..\\testExcel\\'
     # input_fold_name = '..\\excel\\'
     init()
-    print("获取输入的文件夹的excel文件...")
-    a_list = get_file_from_fold(_path=input_fold_name)  # 获取文件夹内的所有含有.xls结尾的文件
-    if len(a_list) == 0:
-        print("err: 并没有找到文件夹含有.xls结尾的文件。\n请添加后重新运行此程序!")
-        time.sleep(10000)
-        os.abort()
+    # print("获取输入的文件夹的excel文件...")
+    a_list, flag = get_file_from_fold(_path=input_fold_name)  # 获取文件夹内的所有含有.xls结尾的文件
+    while len(a_list) == 0:
+        if flag == 0:
+            print("错误: 并没有找到文件夹含有.xls结尾的文件。")
+        else:
+            print("错误: 路径输入错误，请核对后再输入")
+        init()
+        a_list = get_file_from_fold(_path=input_fold_name)  # 获取文件夹内的所有含有.xls结尾的文件
     # ic(a_list)
     time.sleep(0.5)
-    print("======导入excel完成！需要合并的文件有", len(a_list), "个")
+    print("搜索文件夹完成！\r从文件夹内找到excel文件有", len(a_list), "个")
     time.sleep(1)
     row_counter = 0
-    print("======新建output文件！")
-    ew = Excel_writer(f'{input_fold_name}\output.xlsx')  # 新建output文件
-    for i in range(len(a_list)):
+    # print("======新建output文件！")
+    ew = Excel_writer(f'{input_fold_name}/output.xlsx')  # 新建output文件
+    print("正在提取中...\r")
+    for i in tqdm(range(len(a_list))):
         er = Excel_reader(_file_name=a_list[i])
         row_sum, col_sum = er.get_row_col_sum()
         real_row_sum = er.find_last_row()  # 查找最后一行 （最后一行有可能是None）
         # ic(real_row_sum)
-        print('查找最后一行：', real_row_sum)
+        # print('查找最后一行：', real_row_sum)
         # 设置获取最后n行
         set_last_row_num = 3
         # 写入表名
@@ -187,14 +196,14 @@ if __name__ == '__main__':
         row_counter += 1
         res_data_3 = er.get_row_value(3)
         for j in range(len(res_data_3)):
-            print(j, ":", res_data_3[j])
+            # print(j, ":", res_data_3[j])
             ew.set_cell_value(row_counter, j + 1, res_data_3[j])
             # 写入内容
         for jj in range(set_last_row_num):
             last_row_n = er.get_row_value(real_row_sum - jj)
             row_counter += 1
             for j in range(len(last_row_n)):
-                print(j, ":", last_row_n[j])
+                # print(j, ":", last_row_n[j])
                 # ic(type(last_row_n[j]))
                 if last_row_n[j] is None:
                     continue
