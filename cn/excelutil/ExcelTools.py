@@ -132,7 +132,7 @@ def init():
     global input_fold_name
     input_fold_name = input("请输入需要汇总文件夹的路径（输入完成按enter键继续）：")
     input_fold_name = input_fold_name.strip()  # 去除最右的空格
-    input_fold_name += '\\'  # macos '/'  win7 '\\'
+    input_fold_name += '/'  # macos '/'  win7 '\\'
     print("开始提取...")
     time.sleep(1)
 
