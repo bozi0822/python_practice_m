@@ -180,7 +180,7 @@ if __name__ == '__main__':
     # print("======新建output文件！")
     ew = Excel_writer(f'{input_fold_name}/output.xlsx')  # 新建output文件
     print("正在提取中...\r")
-    for i in tqdm(range(len(a_list))):
+    for i in tqdm(range(len(a_list)), ncols=50):
         er = Excel_reader(_file_name=a_list[i])
         row_sum, col_sum = er.get_row_col_sum()
         real_row_sum = er.find_last_row()  # 查找最后一行 （最后一行有可能是None）
