@@ -4,11 +4,11 @@ from openpyxl.worksheet import cell_range
 
 
 class ExcelOp(object):
-    def __init__(self, file):
+    def __init__(self, file, sheet_no):
         self.file = file
         self.wb = load_workbook(self.file, data_only=True)
         sheets = self.wb.get_sheet_names()
-        self.sheet = sheets[0]
+        self.sheet = sheets[sheet_no]
         self.ws = self.wb[self.sheet]
 
     # 获取表格的总行数和总列数
@@ -113,28 +113,46 @@ def table_ziZhu():
 
     # print(insertSql)
 
-    for i in range(1000, len(exe_code)):
-        updateSql = "update pm_plan pp set pp.end_date = to_date('" + str(
-            end_date_after[i]) + "','yyyy-MM-dd hh24:mi:ss') \n " \
+    # for i in range(1000, len(exe_code)):
+    #     updateSql = "update pm_plan pp set pp.end_date = to_date('" + str(
+    #         end_date_after[i]) + "','yyyy-MM-dd hh24:mi:ss') \n " \
+    #                              " where pp.exe_code = '" + exe_code[i] + "'" \
+    #                                                                       " and pp.device_code = '" + device_code[
+    #                     i] + "'" \
+    #                          " and pp.end_date = to_date('" + str(end_date_before[i]) + "','yyyy-MM-dd hh24:mi:ss') " \
+    #                                                                                     " and pp.begin_date = to_date('" + str(
+    #         begin_date[i]) + "','yyyy-MM-dd hh24:mi:ss');"
+    #     print(updateSql)
+
+    for i in range(3, 1000):
+        updateSql = "update pm_plan pp set pp.exe_hours = ROUND((pp.end_date - pp.begin_date) * 24* 60, 1) " \
                                  " where pp.exe_code = '" + exe_code[i] + "'" \
-                                                                          " and pp.device_code = '" + device_code[
-                        i] + "'" \
-                             " and pp.end_date = to_date('" + str(end_date_before[i]) + "','yyyy-MM-dd hh24:mi:ss') " \
-                                                                                        " and pp.begin_date = to_date('" + str(
-            begin_date[i]) + "','yyyy-MM-dd hh24:mi:ss');"
+                                 " and pp.device_code = '" + device_code[i] + "'" \
+                             " and pp.end_date = to_date('" + str(end_date_after[i]) + "','yyyy-MM-dd hh24:mi:ss') " \
+                             " and pp.begin_date = to_date('" + str(begin_date[i]) + "','yyyy-MM-dd hh24:mi:ss');"
         print(updateSql)
 
+    for i in range(1000, len(exe_code)):
+        updateSql = "update pm_plan pp set pp.exe_hours = ROUND((pp.end_date - pp.begin_date) * 24* 60, 1) " \
+                                 " where pp.exe_code = '" + exe_code[i] + "'" \
+                                 " and pp.device_code = '" + device_code[i] + "'" \
+                             " and pp.end_date = to_date('" + str(end_date_after[i]) + "','yyyy-MM-dd hh24:mi:ss') " \
+                             " and pp.begin_date = to_date('" + str(begin_date[i]) + "','yyyy-MM-dd hh24:mi:ss');"
+        # print(updateSql)
+
 if __name__ == '__main__':
-    excel_op = ExcelOp(file=r"D:\MyData\ex_pengzb\Downloads\自主维护记录修改新.xlsx")
-    exe_code = excel_op.get_col_value(2)
-    # ic(exe_code)
-    device_code = excel_op.get_col_value(4)
-    # ic(device_code)
-    begin_date = excel_op.get_col_value(5)
-    # ic(begin_date)
-    end_date_before = excel_op.get_col_value(6)
-    # ic(end_date_before)
-    end_date_after = excel_op.get_col_value(7)
-    # ic(end_date_after)
+    # excel_op = ExcelOp(file=r"D:\MyData\ex_pengzb\Downloads\自主维护记录修改新.xlsx")
+    # exe_code = excel_op.get_col_value(2)
+    # # ic(exe_code)
+    # device_code = excel_op.get_col_value(4)
+    # # ic(device_code)
+    # begin_date = excel_op.get_col_value(5)
+    # # ic(begin_date)
+    # end_date_before = excel_op.get_col_value(6)
+    # # ic(end_date_before)
+    # end_date_after = excel_op.get_col_value(7)
+    # # ic(end_date_after)
+
+    table_ziZhu()
 
 
