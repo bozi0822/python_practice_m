@@ -69,9 +69,13 @@ def open_uri2(scheduleDate, baseOrganizeID):
         count = item["count"]
         vaccineProducer = item["vaccineProducer"]
         countInt = int(count)
-        if (countInt > 0):
+        if countInt > 0:
             todayTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            print(vaccineProducer + ' ==剩余数量：' + str(count) + '【' + todayTime + '】')
+            res_content = vaccineProducer + ' ==剩余数量：' + str(count) + '【' + todayTime + '】'
+            print(res_content)
+            with open("log.txt", "a", newline='') as f:
+                f.write(res_content + '\n')
+                f.close()
 
 
 if __name__ == '__main__':
@@ -97,5 +101,6 @@ if __name__ == '__main__':
                 if (resList.__len__() > 0):
                     print('watchOUT!!!!')
                     for res in resList:
+                        random_num = random.randint(0, 1)
                         print(groupArea, groupStreet)
                         open_uri2(today, res)
