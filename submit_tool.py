@@ -30,13 +30,7 @@ today = time.strftime("%Y-%m-%d", time.localtime())
 def submit(token, platformScheduleId, base_organize_name, base_organize_ID, base_organize_phone,
            base_organize_address, ):
     needleTimes = "1"  # 针次
-    #################################自己的信息####################################
-    workAddress = ""  # 公司地址
-    homeAddress = ""  # 住址
-    realName = ""  # 姓名
-    idCardNo = ""  # 身份证
-    telephone = ""  # 电话
-    ###############################################################################
+
     body = {
         "token": token,
         "bookType": "personal",  # 个人预约
@@ -142,14 +136,23 @@ def find_info(groupArea, groupStreet, base_organize_name):
     return base_organize_ID, base_organize_phone, base_organize_address, schedule_ID
 
 
+
+#################################自己的信息####################################
+workAddress = ""  # 公司地址
+homeAddress = ""  # 住址
+realName = ""  # 姓名
+idCardNo = ""  # 身份证
+telephone = ""  # 电话
+
+groupArea = "顺德区",
+groupStreet = "北滘镇",
+base_organize_name = "北滘文化中心新冠疫苗大型临时接种点"
+###############################################################################
+
 if __name__ == '__main__':
-    groupArea = "顺德区",
-    groupStreet = "北滘镇",
-    base_organize_name = "北滘文化中心新冠疫苗大型临时接种点"
 
     base_organize_ID, base_organize_phone, base_organize_address, schedule_ID = find_info(groupArea, groupStreet,
                                                                                           base_organize_name)
-
     token = get_token()
     submit(token=token, platformScheduleId=schedule_ID, base_organize_name=base_organize_name,
            base_organize_ID=base_organize_ID, base_organize_phone=base_organize_phone,
