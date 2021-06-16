@@ -4,6 +4,7 @@ import requests
 import json
 import time
 import random
+import datetime
 
 header = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36",
@@ -11,14 +12,14 @@ header = {
 }
 
 all = [
-    {"groupArea": "禅城区",
-     "groupStreets": {
-         "石湾街道", "张槎街道", "祖庙街道", "南庄镇"
-     }},
-    {"groupArea": "南海区",
-     "groupStreets": {
-         "桂城街道", "丹灶镇", "狮山镇", "大沥镇", "里水镇"
-     }},
+    # {"groupArea": "禅城区",
+    #  "groupStreets": {
+    #      "石湾街道", "张槎街道", "祖庙街道", "南庄镇"
+    #  }},
+    # {"groupArea": "南海区",
+    #  "groupStreets": {
+    #      "桂城街道", "丹灶镇", "狮山镇", "大沥镇", "里水镇"
+    #  }},
     {"groupArea": "顺德区",
      "groupStreets": {
          "大良街道", "伦教街道", "北滘镇", "陈村镇"
@@ -47,6 +48,7 @@ def open_uri(groupArea, groupStreet):
     print(groupStreet)
     for item in info_dic["entityList"]:
         show_flag = item["showFlag"]
+        global organizeName
         organizeName = item['organizeName']
         # print(organizeName + " - 无号")
         if (show_flag == '1'):
@@ -55,7 +57,7 @@ def open_uri(groupArea, groupStreet):
     return resList
 
 
-def open_uri2(scheduleDate, baseOrganizeID):
+def open_uri2(scheduleDate, baseOrganizeID,groupArea, groupStreet):
     body = {
         "scheduleDate": scheduleDate,
         "baseOrganizeID": baseOrganizeID
@@ -66,6 +68,8 @@ def open_uri2(scheduleDate, baseOrganizeID):
     ########################################################################################################################################
     # data = '{"ResCode":"100","ResMsg":"获取排班信息成功","entityList":[{"beginTimeStr":"14:30:00","count":300,"endTimeStr":"15:30:00","scheduleID":"9086ee28830d43d5866362d4f98349df1622176400468","vaccineProducer":"北京生物（含长春、兰州和成都）"},{"beginTimeStr":"15:30:00","count":0,"endTimeStr":"16:30:00","scheduleID":"e68e3605c8314a20a22792c77851130a1622176430593","vaccineProducer":"北京生物（含长春、兰州和成都）"}]}'
     info_dic = json.loads(data)
+    if "entityList" not in info_dic:
+        return
     for item in info_dic["entityList"]:
         count = item["count"]
         vaccineProducer = item["vaccineProducer"]
@@ -74,12 +78,18 @@ def open_uri2(scheduleDate, baseOrganizeID):
             todayTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             res_content = vaccineProducer + ' ==剩余数量：' + str(count) + '【' + todayTime + '】'
             print(res_content)
-            with open("log.txt", "a", newline='') as f:
-                f.write(res_content + '\n')
-                f.close()
+            timeName = time.strftime("%Y%m%d", time.localtime())
+            with open("log" + timeName + ".txt", "a", newline='') as f:
+                f.write(res_content + groupArea + '-' + groupStreet +'-' + organizeName + '\n')
+
 
 
 if __name__ == '__main__':
+    today = datetime.date.today()
+    temp = datetime.timedelta(days=1)
+    nextDay = str(today + temp)
+    print(nextDay)
+
     today = time.strftime("%Y-%m-%d", time.localtime())
 
     resList = []
@@ -104,4 +114,5 @@ if __name__ == '__main__':
                     for res in resList:
                         random_num = random.randint(0, 1)
                         print(groupArea, groupStreet)
-                        open_uri2(today, res)
+                        open_uri2(today, res, groupArea, groupStreet)
+                        open_uri2(nextDay, res, groupArea, groupStreet)
