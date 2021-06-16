@@ -1,4 +1,3 @@
-
 import requests
 import base64
 import json
@@ -21,8 +20,9 @@ header1 = {
     'Content-Security-Policy': "default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval' ;style-src 'self' 'unsafe-inline' ;connect-src 'self' ;worker-src 'self' ;img-src 'self' ;frame-src 'self' ;"
 }
 
-if __name__ == "__main__":
-    token_res = requests.post(token_url,headers=token_header,data=json.dumps(body))
+
+def get_pic_code():
+    token_res = requests.post(token_url, headers=token_header, data=json.dumps(body))
     # print(token_res.content)
     data = token_res.content
     dataObj = json.loads(data)
@@ -36,3 +36,6 @@ if __name__ == "__main__":
 
     with open('pic_code.jpeg', 'wb') as f:
         f.write(image_data)
+
+if __name__ == "__main__":
+    get_pic_code()

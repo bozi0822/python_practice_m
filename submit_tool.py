@@ -1,6 +1,8 @@
 import requests
 import json
 import time
+from cn.code_predict import base64_api
+from pic_code import get_pic_code
 
 header = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36",
@@ -30,6 +32,8 @@ today = time.strftime("%Y-%m-%d", time.localtime())
 def submit(token, platformScheduleId, base_organize_name, base_organize_ID, base_organize_phone,
            base_organize_address, ):
     needleTimes = "1"  # 针次
+    img_path = 'pic_code.jpeg'
+    result = base64_api(uname='bozi0822', pwd='111111qq', img=img_path, typeid=11)
 
     body = {
         "token": token,
@@ -49,7 +53,7 @@ def submit(token, platformScheduleId, base_organize_name, base_organize_ID, base
         "telephone": telephone,  # 电话
         "sex": "1",  # 性别 1男
         "idCardNoType": "01",  # 证件类型 01身份证
-        "picCode": "1", # 验证码 #################################
+        "picCode": result, # 验证码 #################################
         "birthday": ""
     }
 
@@ -151,6 +155,7 @@ base_organize_name = "北滘文化中心新冠疫苗大型临时接种点"
 ###############################################################################
 
 if __name__ == '__main__':
+    get_pic_code()
 
     base_organize_ID, base_organize_phone, base_organize_address, schedule_ID = find_info(groupArea, groupStreet,
                                                                                           base_organize_name)
