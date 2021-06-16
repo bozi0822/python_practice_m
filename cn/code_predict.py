@@ -1,7 +1,7 @@
 import base64
 import json
 import requests
-# 一、图片文字类型(默认 3 数英混合)：
+# 一、图片文字类型(默认 3 数英混合)：http://www.kuaishibie.cn/
 # 1 : 纯数字
 # 1001：纯数字2
 # 2 : 纯英文
