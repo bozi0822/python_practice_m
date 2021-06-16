@@ -49,6 +49,7 @@ def submit(token, platformScheduleId, base_organize_name, base_organize_ID, base
         "telephone": telephone,  # 电话
         "sex": "1",  # 性别 1男
         "idCardNoType": "01",  # 证件类型 01身份证
+        "picCode": "1", # 验证码 #################################
         "birthday": ""
     }
 
